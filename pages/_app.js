@@ -5,22 +5,23 @@ import Layout from '../components/layout'
 import '../styles/index.css'
 
 function MyApp({ Component, pageProps }) {
-  const [user, setUser] = useState()
-
+  const [user, setUser] = useState();
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    console.log(userbase);
-    userbase.init({ appId: process.env.NEXT_PUBLIC_USERBASE_APP_ID })
+    
+    userbase.init({ appId: process.env.NEXT_PUBLIC_USERBASE_APP_ID,sessionLength :3600 })
       .then((session) => {
-        console.log(session.user);
-        console.log(userbase);
-
+        if (session.user) {
+          setUser(session.user);
+        }
+        setLoaded(true);
       });
  
   }, [])
 
   return (
     <Layout user={user} setUser={setUser}>
-      <Component user={user} {...pageProps} />
+      {loaded ? <Component user={user} {...pageProps} /> : <div>I am a loading spinner.</div>}
     </Layout>
   )
 }

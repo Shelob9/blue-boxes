@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import userbase from 'userbase-js'
-
+const rememberMe = 'local';
 function LoginModal({ toggle, modalType, setUser }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -18,7 +18,7 @@ function LoginModal({ toggle, modalType, setUser }) {
       const user = await userbase.signUp({
         username,
         password,
-        rememberMe: 'none',
+        rememberMe,
       })
       setUser(user)
       setLoading(false)
@@ -36,7 +36,7 @@ function LoginModal({ toggle, modalType, setUser }) {
       const user = await userbase.signIn({
         username,
         password,
-        rememberMe: 'none',
+        rememberMe
       })
       setUser(user)
       setLoading(false)

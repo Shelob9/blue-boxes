@@ -20,7 +20,7 @@ export default function Nav({ user, setUser }) {
       console.error(e.message)
     }
   }
-
+  
   return (
     <nav className="container mx-auto">
       <ul className="flex justify-end items-center p-8">
