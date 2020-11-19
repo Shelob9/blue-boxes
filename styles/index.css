@@ -1,7 +1,18 @@
-@import './button.css';
+@import "./button.css";
 
 /* purgecss start ignore */
 @tailwind base;
 @tailwind components;
 /* purgecss end ignore */
 @tailwind utilities;
+
+.graph {
+	@apply border-2 border-blue-100 border-opacity-50;
+}
+
+.graph-box {
+	width: 10px;
+	min-width: 10px;
+	height: 10px;
+	min-height: 10px;
+}
