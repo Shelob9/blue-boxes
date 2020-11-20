@@ -168,12 +168,10 @@ const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
 	if (!graph||!isLoaded) {
 		return <div>Loading Graph</div>;
 	}
-	const changeGraph = (graphId) => {
-		
+	const changeGraph = (graphId) => {	
 		if (window) {
 			//@ts-ignore
 			window.location = `${router.pathname}?graphId=${graphId}`
-
 		}
 	}
 

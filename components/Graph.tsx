@@ -111,6 +111,26 @@ const Graph: FC<{
 		if (contentRef.current && linkRef.current) {
 			contentRef.current.value = openBox ? openBox.content : '';
 			linkRef.current.value = openBox ? openBox.link : '';
+			contentRef.current.onblur = (e) => {
+				//@ts-ignore
+				if (openBox.content != e.target.value) {
+					saveBox({
+						...openBox,
+						//@ts-ignore
+						content: e.target.value
+					});
+				}
+			};
+			linkRef.current.onblur = (e) => {
+				//@ts-ignore
+				if (openBox.link != e.target.value) {
+					saveBox({
+						...openBox,
+						//@ts-ignore
+						link: e.target.value
+					});
+				}
+			}
 		}
 		
 	},[openBox])
