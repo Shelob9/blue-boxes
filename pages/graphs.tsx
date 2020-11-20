@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import userbase,{ UserProfile } from "userbase-js";
 import Graph, { IGraph, makeGraph } from "../components/Graph";
+import { useRouter } from 'next/router'
 
 export async function getServerSideProps() {
     const graph = makeGraph();
@@ -40,13 +41,24 @@ const useGraphDb = ({ _graph }) => {
             }).catch((e) => console.log(e));
         }
     }, [isLoaded]);
+    return {
+        graph
+    }
 }
 const Graphs = (props: { graph: IGraph; user?: UserProfile }) => {
-    //useGraphDb({ _graph: props.graph });
+    let { graph } = useGraphDb({ _graph: props.graph });
+    const router = useRouter()
+    
+    useEffect(() => {
+        if (graph.graphId) {
+           router.push(`${router.pathname}?graphId=${graph.graphId}`)
+        }
+    },[router.pathname]);
     return (
         <div>
-            <h1>New Graph</h1>
-            <Graph graph={props.graph} />
+            <h1>
+            Graph {`${graph.graphId.replace('graph_', '')}`}</h1>
+            <Graph graph={graph} />
         </div>
     );
 };
