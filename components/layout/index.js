@@ -5,9 +5,10 @@ function Layout({ user, setUser, children }) {
       <Nav user={user} setUser={setUser} />
       {children}
       <footer className={'mt-8'}>
-        <p >
-          Something <a href="https://joshpress.net">Josh</a> might be making. Got the idea from <a href="https://twitter.com/visakanv/status/1329093575649370113">this Vias tweet.</a>
+        <p>
+          Something <a href="https://joshpress.net">Josh</a> might be making. Got the idea from <a href="https://twitter.com/visakanv/status/1329093575649370113">this Visa tweet.</a>
         </p>
+<p><a href="https://github.com/Shelob9/blue-boxes/">Source</a></p>
       </footer>
     </div>
   )
