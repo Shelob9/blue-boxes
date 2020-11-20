@@ -29,13 +29,7 @@ export interface IGraph {
 	rows: IRows;
 }
 
-const BoxEdit: FC<{ box: IBox }> = ({ box }) => {
-	return (
-		<td
-			className={`graph graph-box ${!box.open ? 'bg-white' : 'bg-black'}`}
-		/>
-	);
-};
+
 
 const Row: FC<{
 	row: IRow;
