@@ -1,12 +1,12 @@
-import { IGraph, IBox, IBoxes } from "./Graph";
+import { IGraph, IBox, IBoxes } from './Graph';
 export type IGraphActions =
-	| { type: "openBox"; boxId: string; rowId: string }
-	| { type: "closeBox"; boxId: string; rowId: string }
-	| { type: "editBox"; box: IBox }
-	| { type: "setRow"; rowId: string; boxes: IBoxes };
+	| { type: 'openBox'; boxId: string; rowId: string }
+	| { type: 'closeBox'; boxId: string; rowId: string }
+	| { type: 'editBox'; box: IBox }
+	| { type: 'setRow'; rowId: string; boxes: IBoxes };
 const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
 	switch (action.type) {
-		case "openBox":
+		case 'openBox':
 			return {
 				...graph,
 				rows: {
@@ -23,7 +23,7 @@ const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
 					},
 				},
 			};
-		case "closeBox":
+		case 'closeBox':
 			return {
 				...graph,
 				rows: {
@@ -40,7 +40,7 @@ const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
 					},
 				},
 			};
-		case "editBox":
+		case 'editBox':
 			return {
 				...graph,
 				rows: {
@@ -54,7 +54,7 @@ const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
 					},
 				},
 			};
-		case "setRow":
+		case 'setRow':
 			return {
 				...graph,
 				rows: {
