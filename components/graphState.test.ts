@@ -29,3 +29,17 @@ test('sets row', () => {
 	expect(graph.rows[rowId].boxes[boxId].open).toBe(true);
 	expect(Object.keys(graph.rows[rowId].boxes).length).toBe(1);
 });
+
+test('edits box', () => {
+	let graph = makeGraph();
+	let rowId = Object.keys(graph.rows)[0];
+	let row1 = graph.rows[rowId];
+	let boxId = Object.keys(row1.boxes)[0];
+	let r1box1 = row1.boxes[boxId];
+	r1box1.content = 'Hi Roy';
+	graph = graphReducer(graph, {
+		type: 'editBox',
+		box: r1box1,
+	});
+	expect(graph.rows[rowId].boxes[boxId].content).toEqual('Hi Roy');
+});

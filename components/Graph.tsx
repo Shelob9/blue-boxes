@@ -93,6 +93,7 @@ const Graph: FC<{ graph: IGraph }> = (props) => {
 	};
 
 	const onBoxEdit = (box: IBox) => {
+		
 		dispatch({ type: 'editBox', box });
 	};
 
@@ -124,12 +125,12 @@ const Graph: FC<{ graph: IGraph }> = (props) => {
 								className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
 								id="content"
 								value={openBox.content}
-								onChange={(e) =>
+								onChange={(e) =>{
 									onBoxEdit({
 										...openBox,
 										content: e.target.value,
 									})
-								}
+								}}
 							/>
 						</div>
 
