@@ -42,7 +42,7 @@ const useGraphDb = ({ _graph }) => {
     }, [isLoaded]);
 }
 const Graphs = (props: { graph: IGraph; user?: UserProfile }) => {
-    useGraphDb({ _graph: props.graph });
+    //useGraphDb({ _graph: props.graph });
     return (
         <div>
             <h1>New Graph</h1>
