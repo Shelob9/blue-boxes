@@ -1,8 +1,9 @@
-import { IGraph, IBox } from "./Graph";
+import { IGraph, IBox, IBoxes } from "./Graph";
 export type IGraphActions =
 	| { type: "openBox"; boxId: string; rowId: string }
 	| { type: "closeBox"; boxId: string; rowId: string }
-	| { type: "editBox"; box: IBox };
+	| { type: "editBox"; box: IBox }
+	| { type: "setRow"; rowId: string; boxes: IBoxes };
 const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
 	switch (action.type) {
 		case "openBox":
@@ -50,6 +51,17 @@ const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
 							...graph.rows[action.box.rowId].boxes,
 							[action.box.boxId]: action.box,
 						},
+					},
+				},
+			};
+		case "setRow":
+			return {
+				...graph,
+				rows: {
+					...graph.rows,
+					[action.rowId]: {
+						rowId: action.rowId,
+						boxes: action.boxes,
 					},
 				},
 			};

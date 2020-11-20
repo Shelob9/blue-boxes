@@ -14,3 +14,18 @@ test("opens and closes box", () => {
 	r1box1 = graph.rows[rowId].boxes[boxId];
 	expect(r1box1.open).toBe(false);
 });
+
+test("sets row", () => {
+	let graph = makeGraph();
+	let rowId = Object.keys(graph.rows)[2];
+	let boxId = "b1";
+	graph = graphReducer(graph, {
+		type: "setRow",
+		rowId,
+		boxes: {
+			[boxId]: { rowId, boxId, open: true },
+		},
+	});
+	expect(graph.rows[rowId].boxes[boxId].open).toBe(true);
+	expect(Object.keys(graph.rows[rowId].boxes).length).toBe(1);
+});
