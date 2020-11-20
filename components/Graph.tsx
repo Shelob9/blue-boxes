@@ -117,7 +117,7 @@ const Graph: FC<{
 	
 
 	return (
-		<div className="flex mb-4">
+		<div className="flex mb-4 p-8">
 			<table className={'graph md:md:3/4'}>
 				<tbody>
 					{Object.values(graph.rows).map((row) => (
@@ -193,8 +193,8 @@ export const makeRows = (width: number, height: number) => {
 	return rows;
 }
 export const makeGraph = (graphId?: string, width?: number, height?:number) => {
-	width = width ?? 10;
-	height = height ?? 5;
+	width = width ?? 20;
+	height = height ?? 20;
 	const rows = makeRows(width, height);
 	const graph: IGraph = {
 		graphId: graphId ? graphId : createId('graph'),

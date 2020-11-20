@@ -1,4 +1,4 @@
-@import "./button.css";
+@import './button.css';
 
 /* purgecss start ignore */
 @tailwind base;
@@ -7,12 +7,12 @@
 @tailwind utilities;
 
 .graph {
-	@apply border-2 border-blue-100 border-opacity-50;
+	@apply border-2 border-blue-500 border-opacity-50;
 }
 
 .graph-box {
-	width: 10px;
-	min-width: 10px;
-	height: 10px;
-	min-height: 10px;
+	width: 20px;
+	min-width: 20px;
+	height: 20px;
+	min-height: 20px;
 }

@@ -122,7 +122,7 @@ const useGraphDb = (props) => {
 				//@todo emit event
 				if (isNew) {
 					//Create graph
-					let newGraph = makeGraph(graphId);
+					let newGraph = makeGraph(graphId,25,25);
 					let promises = Object.keys(newGraph.rows).map(async(rowId) => {
 						let row = newGraph.rows[rowId];
 						//Save each box in graph database
