@@ -1,5 +1,6 @@
 
 import { FC, useReducer, useState } from "react";
+import graphReducer from "./graphReducer";
 
 export const createId = (prefix: string): string => {
     return `${prefix}_${Math.random().toString(36).substring(7)}`;
@@ -25,65 +26,7 @@ export interface IGraph  {
     rows: IRows;
 }
 
-export type IGraphActions =
-    { type: "openBox"; boxId: string; rowId: string; }
-    | { type: "closeBox"; boxId: string; rowId: string; }
-    | { type: "editBox"; box: IBox; };
-const graphReducer = (graph: IGraph, action: IGraphActions): IGraph => {
-    switch (action.type) {
-        case "openBox":
-            return {
-                ...graph,
-                rows: {
-                    ...graph.rows,
-                    [action.rowId]: {
-                        ...graph.rows[action.rowId],
-                        boxes: {
-                            ...graph.rows[action.rowId].boxes,
-                            [action.boxId]: {
-                                ...graph.rows[action.rowId].boxes[action.boxId],
-                                open: true,
-                            }
-                        }
-                    }
-                }
-            };
-            case "closeBox":
-                return {
-                    ...graph,
-                    rows: {
-                        ...graph.rows,
-                        [action.rowId]: {
-                            ...graph.rows[action.rowId],
-                            boxes: {
-                                ...graph.rows[action.rowId].boxes,
-                                [action.boxId]: {
-                                    ...graph.rows[action.rowId].boxes[action.boxId],
-                                    open: false,
-                                }
-                            }
-                        }
-                    }
-                };
-        case "editBox":
-            return {
-                ...graph,
-                rows: {
-                    ...graph.rows,
-                    [action.box.rowId]: {
-                        ...graph.rows[action.box.rowId],
-                        boxes: {
-                            ...graph.rows[action.box.rowId].boxes,
-                            [action.box.boxId]: action.box
-                        }
-                    }
-                }
-            };
-        default:
-            return graph;
-    }
 
-};
 
 const BoxEdit: FC<{ box: IBox }> = ({ box }) => {
     return (
