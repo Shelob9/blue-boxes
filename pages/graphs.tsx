@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import userbase, { UserProfile } from 'userbase-js';
 import Graph, { createId, IBox, IGraph, makeGraph } from '../components/Graph';
 import { useRouter } from 'next/router';
@@ -16,26 +16,36 @@ export interface ISaveGraph {
 	rows: string[];
 }
 
-const mapRows = (saveGraph: ISaveGraph): IGraph => {
-	const { graphId } = saveGraph;
-	let rows = {};
-	saveGraph.rows.forEach((rowId) => {
-		rows[rowId] = {
-			rowId,
-			boxes: {},
-		};
-	});
-	return {
-		graphId,
-		rows,
-	};
-};
-const useGraphDb = ({ graphId }) => {
+export interface ISavedGraphList  {
+	databaseId: string;
+	databaseName: string;
+	graphId: string;
+} [];
+const useGraphsDb = () => {
+	let [graphs, setGraphs] = useState<IGraph[]>([]);
+	useEffect(() => {
+		userbase.getDatabases().then(({databases}) => {
+			let _graphs = [];
+			databases.forEach(db => {
+				if (db.databaseName.startsWith('graph-graph')) {
+					_graphs.push({
+						databaseId: db.databaseId,
+						databaseName: db.databaseName,
+						graphId: db.databaseName.replace('graph-graph', 'graph')
+					})
+				}
+			});
+			setGraphs(_graphs);
+		  }).catch((e) => console.error(e))
+	}, [])
+	return { graphs };
+}
+const useGraphDb = (props) => {
 	const [isLoaded, setIsLoaded] = useState(false);
-
 	const [graph, setGraph] = useState<IGraph>();
+	let [graphId, setGraphId] = useState<string>(props.graphId);
 
-	let databaseName = `graph-${graphId}`;
+	let databaseName = useMemo(() => `graph-${graphId}`, [graphId]);
 	const insertBox = async (box: IBox) => {
 		const { boxId } = box;
 		return await userbase
@@ -65,13 +75,15 @@ const useGraphDb = ({ graphId }) => {
 	
 	//Open graph database and load the saved graph
 	useEffect(() => {
+		setIsLoaded(false);
 		async function openDatabase() {
 			let isNew: undefined | true | false;
 			try {
 				await userbase.openDatabase({
 					databaseName,
 					changeHandler(items) {
-						//IF no items, this is a new graph.
+						if (undefined === isNew) {
+							//IF no items, this is a new graph.
 						if (!items || !items.length) {
 							//Can't create right away.
 							//Db may not be open yet.
@@ -101,6 +113,8 @@ const useGraphDb = ({ graphId }) => {
 							});
 							setGraph(savedGraph);
 						}
+						}
+						
 					},
 				});
 				
@@ -128,33 +142,50 @@ const useGraphDb = ({ graphId }) => {
 		}
 		openDatabase();
 		setIsLoaded(true);
-	}, []);
+	}, [graphId]);
 
 	
+
 	return {
 		graph,
 		isLoaded,
-		saveBox
+		saveBox,
+		graphId,
+		setGraphId
 	};
 };
 const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
-	let { graph, isLoaded, saveBox } = useGraphDb({ graphId: props.graphId });
+	const { graphs } = useGraphsDb();
+
+	let { graph, isLoaded, saveBox,setGraphId,graphId } = useGraphDb({ graphId:props.graphId });
 	const router = useRouter();
 	useEffect(() => {
-		if (props.graphId) {
-			router.push(`${router.pathname}?graphId=${props.graphId}`);
+		if (graphId) {
+			router.push(`${router.pathname}?graphId=${graphId}`);
 		}
-	}, [router.pathname]);
+	}, [graphId]);
+
 	if (!graph||!isLoaded) {
 		return <div>Loading Graph</div>;
 	}
-	
+	const changeGraph = (graphId) => {
+		if (window) {
+			//@ts-ignore
+			window.location = `${router.pathname}?graphId=${graphId}`
+
+		}
+	}
 	return (
 		<div>
 			<section>
 				<h1 className={'inline mr-4 text-2xl'}>
 					Graph: {`${graph.graphId.replace('graph_', '')}`}
 				</h1>
+				<select value={graphId} onChange={(e) => changeGraph(e.target.value)}>
+					{graphs ? graphs.map(g => <option key={g.graphId} value={g.graphId}>
+						{g.graphId}
+					</option>): <option />}
+				</select>
 			</section>
 			<Graph graph={graph}  saveBox={saveBox} />
 		</div>

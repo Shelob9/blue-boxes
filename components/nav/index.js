@@ -23,7 +23,7 @@ export default function Nav({ user, setUser }) {
 
 	return (
 		<nav className="container mx-auto">
-			<ul className="flex justify-end items-center p-8">
+			<ul className="flex justify-end items-center p-8 inline">
 				{!user ? (
 					<>
 						<li>
