@@ -44,15 +44,10 @@ const useGraphDb = ({ graphId }) => {
         async function openDatabase() {
             try {
                 await userbase.openDatabase({
-                    databaseName: `graphs`,
+                    databaseName: `graph-${graphId}`,
                     changeHandler: function (items) {
-                        let g = items.find(item => item.itemId === graphId);
-                        if (g) {
-                            //@ts-ignore
-                            setGraph(mapRows(g.item));
-                            setLoadingState({...loadingState,graph:true})
-                        }
-                    },
+                        console.log(items);
+                    }
                 });
             
             } catch (e) {
@@ -61,26 +56,7 @@ const useGraphDb = ({ graphId }) => {
         }
         openDatabase();
     }, []);
-    useEffect(() => {
-        async function openRowsDatabase() {
-            try {
-                await userbase.openDatabase({
-                    databaseName: `graph-rows`,
-                    changeHandler: function (items) {
-                        console.log(items);
-                    },
-                });
-            
-            } catch (e) {
-                console.error(e.message)
-            }
-        }
-
-        if (true === loadingState.graph && false === loadingState.rows) {
-            
-            openRowsDatabase();
-       } 
-    }, [loadingState]);
+    
     return {
         graph
     }
