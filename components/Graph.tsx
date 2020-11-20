@@ -201,7 +201,7 @@ const Graph: FC<{ graph: IGraph; }> = (props) => {
 
 
 export const makeGraph = () => {
-    const size = 50;
+    const size = 10;
     const rows: IRows = {};
     // create two hundred rows
     for (let ri = 0; ri <= size; ri++) {
@@ -225,7 +225,7 @@ export const makeGraph = () => {
     }
 
     const graph: IGraph = {
-        graphId: createId("graph"),
+        graphId: 'graph_5ieap',//createId("graph"),
         rows,
     };
     return graph;
