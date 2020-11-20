@@ -28,7 +28,7 @@ export default function Nav({ user, setUser }) {
 					<>
 						<li>
 							<button
-								className="font-bold mx-2"
+								className="btn mx-2"
 								onClick={() => openModal('logIn')}
 							>
 								Log In

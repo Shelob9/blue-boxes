@@ -16,3 +16,23 @@
 	height: 20px;
 	min-height: 20px;
 }
+
+form div {
+	@apply w-full px-3 mb-6;
+}
+
+form div label {
+	@apply block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2;
+}
+
+form div input {
+	@apply appearance-none block w-full bg-gray-400 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight;
+}
+
+form div input:focus {
+	@apply outline-none bg-white;
+}
+
+md:form div {
+	@apply mb-0;
+}

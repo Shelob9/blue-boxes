@@ -1,7 +1,14 @@
+.btn {
+	@apply bg-white border-2 border-black text-black font-bold py-2 px-4 rounded;
+}
+.btn:hover {
+	@apply bg-yellow-400 text-blue-800 border-blue-500;
+}
+
 .btn-yellow {
-  @apply bg-yellow-400 text-black font-bold py-2 px-4 rounded;
+	@apply bg-yellow-400 text-black font-bold py-2 px-4 rounded;
 }
 
 .btn-yellow:hover {
-  @apply bg-yellow-500;
+	@apply bg-yellow-500;
 }
