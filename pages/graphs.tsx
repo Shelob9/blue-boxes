@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import userbase, { UserProfile } from 'userbase-js';
-import Graph, { createId, IGraph, makeGraph } from '../components/Graph';
+import Graph, { createId, IBox, IGraph, makeGraph } from '../components/Graph';
 import { useRouter } from 'next/router';
 
 export async function getServerSideProps({ query }) {
@@ -34,12 +34,40 @@ const useGraphDb = ({ graphId }) => {
 	const [isLoaded, setIsLoaded] = useState(false);
 
 	const [graph, setGraph] = useState<IGraph>();
+
+	let databaseName = `graph-${graphId}`;
+	const insertBox = async (box: IBox) => {
+		const { boxId } = box;
+		return await userbase
+			.insertItem({
+				databaseName,
+				item: box,
+				itemId: boxId,
+			})
+			.then(() => {
+				return {boxId}
+			})
+			.catch((e) => console.error(e));
+	};
+	const updateBox = async (box: IBox) => {
+		const { boxId } = box;
+		return await userbase
+			.updateItem({
+				databaseName,
+				item: box,
+				itemId: boxId,
+			})
+			.then(() => {
+				return {boxId}
+			})
+			.catch((e) => console.error(e));
+	};
+	
 	//Open graph database and load the saved graph
 	useEffect(() => {
 		async function openDatabase() {
 			let isNew: undefined | true | false;
-
-			let databaseName = `graph-${graphId}`;
+			
 			try {
 				await userbase.openDatabase({
 					databaseName,
@@ -76,29 +104,22 @@ const useGraphDb = ({ graphId }) => {
 						}
 					},
 				});
+				
 				//The awaited db opening!
 				//@todo emit event
 				if (isNew) {
 					//Create graph
 					let newGraph = makeGraph(graphId);
-					Object.keys(newGraph.rows).forEach((rowId) => {
+					let promises = Object.keys(newGraph.rows).map(async(rowId) => {
 						let row = newGraph.rows[rowId];
 						//Save each box in graph database
-						Object.keys(newGraph.rows[rowId].boxes).forEach(
+						return Object.keys(newGraph.rows[rowId].boxes).map(
 							async (boxId) => {
-								await userbase
-									.insertItem({
-										databaseName,
-										item: row.boxes[boxId],
-										itemId: boxId,
-									})
-									.then(() => {
-										// item inserted
-									})
-									.catch((e) => console.error(e));
+								return insertBox(row.boxes[boxId]);
 							}
 						);
 					});
+					await Promise.all(promises);
 					setGraph(newGraph);
 					
 				}

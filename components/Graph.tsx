@@ -168,15 +168,16 @@ const Graph: FC<{
 	);
 };
 
-export const makeGraph = (graphId?: string) => {
-	const size = 100;
+export const makeGraph = (graphId?: string, width?: number, height?:number) => {
 	const rows: IRows = {};
+	width = width ?? 10;
+	height = height ?? 5;
 	// create two hundred rows
-	for (let ri = 0; ri <= size; ri++) {
+	for (let ri = 0; ri <= width; ri++) {
 		const rowId = `r${ri}`;
 		const boxes: IBoxes = {};
 		// add two hundred boxes
-		for (let bi = 0; bi <= size; bi++) {
+		for (let bi = 0; bi <= height; bi++) {
 			const boxId = `b${bi}_r${ri}`;
 			boxes[boxId] = {
 				boxId,
