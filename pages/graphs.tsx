@@ -49,7 +49,7 @@ const useGraphDb = ({ graphId }) => {
 			})
 			.catch((e) => console.error(e));
 	};
-	const updateBox = async (box: IBox) => {
+	const saveBox = async (box: IBox) => {
 		const { boxId } = box;
 		return await userbase
 			.updateItem({
@@ -67,7 +67,6 @@ const useGraphDb = ({ graphId }) => {
 	useEffect(() => {
 		async function openDatabase() {
 			let isNew: undefined | true | false;
-			
 			try {
 				await userbase.openDatabase({
 					databaseName,
@@ -131,13 +130,15 @@ const useGraphDb = ({ graphId }) => {
 		setIsLoaded(true);
 	}, []);
 
+	
 	return {
 		graph,
-		isLoaded
+		isLoaded,
+		saveBox
 	};
 };
 const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
-	let { graph,isLoaded } = useGraphDb({ graphId: props.graphId });
+	let { graph, isLoaded, saveBox } = useGraphDb({ graphId: props.graphId });
 	const router = useRouter();
 	useEffect(() => {
 		if (props.graphId) {
@@ -150,8 +151,12 @@ const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
 	
 	return (
 		<div>
-			<h1>Graph {`${graph.graphId.replace('graph_', '')}`}</h1>
-			<Graph graph={graph} />
+			<section>
+				<h1 className={'inline mr-4 text-2xl'}>
+					Graph: {`${graph.graphId.replace('graph_', '')}`}
+				</h1>
+			</section>
+			<Graph graph={graph}  saveBox={saveBox} />
 		</div>
 	);
 };

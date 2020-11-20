@@ -58,8 +58,11 @@ const Row: FC<{
 
 const Graph: FC<{
 	graph: IGraph;
+	saveBox: (box: IBox) => void;
 }> = (props) => {
+	const { saveBox } = props;
 	const [graph, dispatch] = useReducer(graphReducer, props.graph);
+	//Find one box in graph
 	const getBox = (boxId: string, rowId: string) => {
 		return graph.rows[rowId].boxes[boxId];
 	};
@@ -70,22 +73,28 @@ const Graph: FC<{
 	const [openBox, setOpenBox] = useState<IBox | undefined>(undefined);
 
 	const onBoxClick = (boxId: string, rowId: string) => {
-		const box = getBox(boxId, rowId);
+		//get the box
+		let clickedOnBox = getBox(boxId, rowId);
 		if (undefined !== openBox) {
+			//update the box from refs
+			let box = {
+				...openBox,
+				open: false,
+				content: contentRef.current.value,
+				link: linkRef.current.value
+			};
 			dispatch({
 				type: 'editBox',
-				box:{
-					...openBox,
-					open: false,
-					content: contentRef.current.value,
-					link:linkRef.current.value
-				}
+				box
 			});
 			setOpenBox(undefined)
+			//Save the box
+			saveBox(box);
 		}
-		if (!box.open) {
+		
+		if (!clickedOnBox.open) {
 			setOpenBox({
-				...box,
+				...clickedOnBox,
 				open: true,
 			});
 			dispatch({
@@ -101,8 +110,7 @@ const Graph: FC<{
 				boxId,
 				rowId,
 			});
-			contentRef.current.value = '';
-			linkRef.current.value = '';
+			
 		}
 	};
 
