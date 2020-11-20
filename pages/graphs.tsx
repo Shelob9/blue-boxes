@@ -32,11 +32,7 @@ const mapRows = (saveGraph: ISaveGraph): IGraph => {
 };
 const useGraphDb = ({ graphId }) => {
 	const [isLoaded, setIsLoaded] = useState(false);
-	const [loadingState, setLoadingState] = useState({
-		graph: false,
-		rows: false,
-		boxes: false,
-	});
+
 	const [graph, setGraph] = useState<IGraph>();
 	//Open graph database and load the saved graph
 	useEffect(() => {
@@ -96,29 +92,33 @@ const useGraphDb = ({ graphId }) => {
 						);
 					});
 					setGraph(newGraph);
+					
 				}
 			} catch (e) {
 				console.error(e.message);
 			}
 		}
 		openDatabase();
+		setIsLoaded(true);
 	}, []);
 
 	return {
 		graph,
+		isLoaded
 	};
 };
 const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
-	let { graph } = useGraphDb({ graphId: props.graphId });
+	let { graph,isLoaded } = useGraphDb({ graphId: props.graphId });
 	const router = useRouter();
 	useEffect(() => {
 		if (props.graphId) {
 			router.push(`${router.pathname}?graphId=${props.graphId}`);
 		}
 	}, [router.pathname]);
-	if (!graph) {
+	if (!graph||!isLoaded) {
 		return <div>Loading Graph</div>;
 	}
+	
 	return (
 		<div>
 			<h1>Graph {`${graph.graphId.replace('graph_', '')}`}</h1>

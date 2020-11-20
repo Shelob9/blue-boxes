@@ -1,4 +1,4 @@
-import { FC, useReducer, useState } from 'react';
+import { FC, useEffect, useReducer, useRef, useState } from 'react';
 import graphReducer from './graphReducer';
 
 export const createId = (prefix: string): string => {
@@ -56,11 +56,16 @@ const Row: FC<{
 	);
 };
 
-const Graph: FC<{ graph: IGraph }> = (props) => {
+const Graph: FC<{
+	graph: IGraph;
+}> = (props) => {
 	const [graph, dispatch] = useReducer(graphReducer, props.graph);
 	const getBox = (boxId: string, rowId: string) => {
 		return graph.rows[rowId].boxes[boxId];
 	};
+
+	const linkRef = useRef<HTMLInputElement>();
+	const contentRef = useRef<HTMLTextAreaElement>();
 
 	const [openBox, setOpenBox] = useState<IBox | undefined>(undefined);
 
@@ -68,10 +73,15 @@ const Graph: FC<{ graph: IGraph }> = (props) => {
 		const box = getBox(boxId, rowId);
 		if (undefined !== openBox) {
 			dispatch({
-				type: 'closeBox',
-				boxId: openBox.boxId,
-				rowId: openBox.rowId,
+				type: 'editBox',
+				box:{
+					...openBox,
+					open: false,
+					content: contentRef.current.value,
+					link:linkRef.current.value
+				}
 			});
+			setOpenBox(undefined)
 		}
 		if (!box.open) {
 			setOpenBox({
@@ -83,19 +93,28 @@ const Graph: FC<{ graph: IGraph }> = (props) => {
 				boxId,
 				rowId,
 			});
+			
 		} else {
+			setOpenBox(undefined)
 			dispatch({
 				type: 'closeBox',
 				boxId,
 				rowId,
 			});
+			contentRef.current.value = '';
+			linkRef.current.value = '';
 		}
 	};
 
-	const onBoxEdit = (box: IBox) => {
+	//when open box change set or empty inputs in editor
+	useEffect(() => {
+		if (contentRef.current && linkRef.current) {
+			contentRef.current.value = openBox ? openBox.content : '';
+			linkRef.current.value = openBox ? openBox.link : '';
+		}
 		
-		dispatch({ type: 'editBox', box });
-	};
+	},[openBox])
+	
 
 	return (
 		<div className="flex mb-4">
@@ -124,13 +143,7 @@ const Graph: FC<{ graph: IGraph }> = (props) => {
 							<textarea
 								className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
 								id="content"
-								value={openBox.content}
-								onChange={(e) =>{
-									onBoxEdit({
-										...openBox,
-										content: e.target.value,
-									})
-								}}
+								ref={ref => contentRef.current = ref}
 							/>
 						</div>
 
@@ -145,13 +158,7 @@ const Graph: FC<{ graph: IGraph }> = (props) => {
 								type={'url'}
 								className="appearance-none block w-full bg-gray-400 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
 								id="url"
-								value={openBox.link}
-								onChange={(e) =>
-									onBoxEdit({
-										...openBox,
-										link: e.target.value,
-									})
-								}
+								ref={ref => linkRef.current = ref}
 							/>
 						</div>
 					</form>
