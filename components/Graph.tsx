@@ -29,8 +29,6 @@ export interface IGraph {
 	rows: IRows;
 }
 
-
-
 const Row: FC<{
 	row: IRow;
 	onBoxClick: (boxId: string, rowId: string) => void;
@@ -170,11 +168,9 @@ const Graph: FC<{
 	);
 };
 
-export const makeGraph = (graphId?: string, width?: number, height?:number) => {
+
+export const makeRows = (width: number, height: number) => {
 	const rows: IRows = {};
-	width = width ?? 10;
-	height = height ?? 5;
-	// create two hundred rows
 	for (let ri = 0; ri <= width; ri++) {
 		const rowId = `r${ri}`;
 		const boxes: IBoxes = {};
@@ -194,7 +190,12 @@ export const makeGraph = (graphId?: string, width?: number, height?:number) => {
 			boxes,
 		};
 	}
-
+	return rows;
+}
+export const makeGraph = (graphId?: string, width?: number, height?:number) => {
+	width = width ?? 10;
+	height = height ?? 5;
+	const rows = makeRows(width, height);
 	const graph: IGraph = {
 		graphId: graphId ? graphId : createId('graph'),
 		rows,
