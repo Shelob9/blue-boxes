@@ -44,17 +44,21 @@ const useGraphDb = ({ graphId }) => {
 				await userbase.openDatabase({
 					databaseName,
 					changeHandler(items) {
+						//IF no items, this is a new graph.
 						if (!items || !items.length) {
+							//Can't create right away.
+							//Db may not be open yet.
 							isNew = true;
-							console.log(0);
 						} else {
+							//Got items!
 							isNew = false;
-							console.log(1);
 							let savedGraph: IGraph = {
 								graphId,
 								rows: {},
 							};
+							//Each item has one box in it.
 							items.forEach(({ item }) => {
+								//Create row if not yet in graph.
 								if (
 									!savedGraph.rows.hasOwnProperty(item.rowId)
 								) {
@@ -63,6 +67,7 @@ const useGraphDb = ({ graphId }) => {
 										boxes: {},
 									};
 								}
+								//put box in the right row
 								savedGraph.rows[item.rowId].boxes[
 									item.boxId
 								] = item;
@@ -71,11 +76,14 @@ const useGraphDb = ({ graphId }) => {
 						}
 					},
 				});
+				//The awaited db opening!
+				//@todo emit event
 				if (isNew) {
+					//Create graph
 					let newGraph = makeGraph(graphId);
 					Object.keys(newGraph.rows).forEach((rowId) => {
 						let row = newGraph.rows[rowId];
-
+						//Save each box in graph database
 						Object.keys(newGraph.rows[rowId].boxes).forEach(
 							async (boxId) => {
 								await userbase
