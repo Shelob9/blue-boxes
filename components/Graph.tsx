@@ -143,16 +143,16 @@ const Graph: FC<{ graph: IGraph; }> = (props) => {
 };
 
 
-export const makeGraph = () => {
+export const makeGraph = (graphId?:string) => {
     const size = 100;
     const rows: IRows = {};
     // create two hundred rows
     for (let ri = 0; ri <= size; ri++) {
-        const rowId = createId(`r${ri}`);
+        const rowId = `r${ri}`
         const boxes: IBoxes = {};
         // add two hundred boxes
         for (let bi = 0; bi <= size; bi++) {
-            const boxId = createId(`b${bi}`);
+            const boxId = `b${bi}_r${ri}`
             boxes[boxId] = {
                 boxId,
                 rowId,
@@ -168,7 +168,7 @@ export const makeGraph = () => {
     }
 
     const graph: IGraph = {
-        graphId: 'graph_5ieap',//createId("graph"),
+        graphId: graphId ? graphId : createId('graph'),
         rows,
     };
     return graph;

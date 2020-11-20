@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import userbase,{ UserProfile } from "userbase-js";
-import Graph, { IGraph, makeGraph } from "../components/Graph";
+import Graph, { createId, IGraph, makeGraph } from "../components/Graph";
 import { useRouter } from 'next/router'
 
 export async function getServerSideProps({query}) {
     //const graph = makeGraph();
-    const { graphId } = query;
+    const graphId = query.graphId ? query.graphId : createId('graph')
     return {
         props: { graphId },
     };
@@ -38,18 +38,59 @@ const useGraphDb = ({ graphId }) => {
         boxes: false,
     })
     const [graph, setGraph] = useState<IGraph>();
-
     //Open graph database and load the saved graph
     useEffect(() => {
         async function openDatabase() {
+            let isNew: undefined | true | false;
+
+            let databaseName = `graph-${graphId}`;
             try {
                 await userbase.openDatabase({
-                    databaseName: `graph-${graphId}`,
-                    changeHandler: function (items) {
-                        console.log(items);
+                    databaseName,
+                    changeHandler (items)  {
+                        if (!items || !items.length) {
+                            isNew = true;
+                            console.log(0);
+
+                           
+                        } else {
+                            isNew = false;
+                            console.log(1);
+                            let savedGraph: IGraph = {
+                                graphId,
+                                rows: {}
+                            }
+                            items.forEach(({item}) => {
+                                if (!savedGraph.rows.hasOwnProperty(item.rowId)) {
+                                    savedGraph.rows[item.rowId] = {
+                                        rowId: item.rowId,
+                                        boxes: {}
+                                    }
+                                }
+                                savedGraph.rows[item.rowId].boxes[item.boxId] = item;
+                            });
+                            setGraph(savedGraph);
+                        }
                     }
                 });
-            
+                if (isNew) {
+                    let newGraph = makeGraph(graphId);
+                    Object.keys(newGraph.rows).forEach(rowId => {
+                        let row = newGraph.rows[rowId];
+                        
+                        Object.keys(newGraph.rows[rowId].boxes).forEach(async(boxId) => {
+                            await userbase.insertItem({
+                                databaseName,
+                                item: row.boxes[boxId],
+                                itemId:boxId
+                              }).then(() => {
+                                // item inserted
+                              }).catch((e) => console.error(e))
+                        });
+                        
+                    });
+                    setGraph(newGraph);
+                }
             } catch (e) {
                 console.error(e.message)
             }
@@ -65,11 +106,13 @@ const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
     let { graph } = useGraphDb({ graphId: props.graphId });
     const router = useRouter()
     useEffect(() => {
-        if (graph && graph.graphId) {
-           router.push(`${router.pathname}?graphId=${graph.graphId}`)
+        if (props.graphId) {
+           router.push(`${router.pathname}?graphId=${props.graphId}`)
         }
     }, [router.pathname]);
-    return <div>1</div>
+    if (!graph) {
+        return <div>Loading Graph</div>
+    }
     return (
         <div>
             <h1>
