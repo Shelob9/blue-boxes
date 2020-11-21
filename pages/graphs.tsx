@@ -23,7 +23,8 @@ const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
 		}
 	}, [graphId]);
 
-	
+	//When changing graph, refresh page.
+	//This is a hack, please put graph state in global provider to fix this
 	const changeGraph = (graphId) => {	
 		if (window) {
 			//@ts-ignore
@@ -35,7 +36,6 @@ const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
 		if (window) {
 			//@ts-ignore
 			window.location = `${router.pathname}`
-
 		}
 	}
 
@@ -55,7 +55,12 @@ const Graphs = (props: { graphId?: string; user?: UserProfile }) => {
 					</option>): <option />}
 					</select>
 					</div>
-				<button onClick={newGraph}  className={'inline border-2 border-black p-4'}>New Graph</button>
+				<button
+					onClick={newGraph}
+					className={'inline border-2 border-black p-4'}
+				>
+					New Graph
+				</button>
 			</section>
 			<Graph graph={graph} saveBox={saveBox} />
 		</div>

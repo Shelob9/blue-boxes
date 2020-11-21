@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { IBox, IGraph, makeGraph } from './Graph';
-import userbase from 'userbase-js';
+import userbase, { DatabaseOperation } from 'userbase-js';
 
 export interface ISaveGraph {
 	graphId: string;
@@ -41,6 +41,26 @@ export const useGraphsDb = () => {
 	}, []);
 	return { graphs };
 };
+
+/**
+ * @see https://stackoverflow.com/a/13255738/1469799
+ * @param array
+ * @param size
+ */
+var chunks = function (array, size) {
+	var results = [];
+	while (array.length) {
+		results.push(array.splice(0, size));
+	}
+	return results;
+};
+/**
+ * @see https://stackoverflow.com/a/39914235/1469799
+ * @param ms
+ */
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
 /**
  * Hook for loading and saving one box
  *
@@ -91,7 +111,7 @@ const useGraphDb = (props: { graphId: string }) => {
 					databaseName,
 					changeHandler(items) {
 						if (undefined === isNew) {
-							//IF no items, this is a new graph.
+							//If no items, this is a new graph.
 							if (!items || !items.length) {
 								//Can't create right away.
 								//Db may not be open yet.
@@ -132,18 +152,40 @@ const useGraphDb = (props: { graphId: string }) => {
 				if (isNew) {
 					//Create graph
 					let newGraph = makeGraph(graphId, 25, 25);
-					let promises = Object.keys(newGraph.rows).map(
-						async (rowId) => {
-							let row = newGraph.rows[rowId];
-							//Save each box in graph database
-							return Object.keys(newGraph.rows[rowId].boxes).map(
-								async (boxId) => {
-									return insertBox(row.boxes[boxId]);
+					Object.keys(newGraph.rows).forEach(async (rowId) => {
+						let row = newGraph.rows[rowId];
+						//Save each box in graph database
+						//Create operations for bulk inserts
+
+						let allOperations = Object.keys(
+							newGraph.rows[rowId].boxes
+						).map(
+							(boxId): DatabaseOperation => {
+								return {
+									command: 'Insert',
+									item: row.boxes[boxId],
+									itemId: boxId,
+								};
+							}
+						);
+						//Break into chunks of ten records or less
+						chunks(allOperations, 10).forEach(
+							async (operations) => {
+								try {
+									//Bulk insert
+									//https://userbase.com/docs/sdk/put-transaction/
+									await userbase.putTransaction({
+										databaseName,
+										operations,
+									});
+									await sleep(100);
+								} catch (error) {
+									await sleep(200);
 								}
-							);
-						}
-					);
-					await Promise.all(promises);
+							}
+						);
+					});
+
 					setGraph(newGraph);
 				}
 			} catch (e) {
